@@ -1,5 +1,7 @@
 -r base.txt
 
+psycopg2-binary==2.7.6.1 
+
 django-debug-toolbar==1.11
 django-extensions==2.1.4
 

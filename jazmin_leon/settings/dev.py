@@ -21,7 +21,7 @@ MIDDLEWARE += (
 SECRET_KEY = env('DJANGO_SECRET_KEY',
                  default='7nn(g(lb*8!r_+cc3m8bjxm#xu!q)6fidwgg&$p$6a+alm+x')
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 # Use Dummy cache for development
 CACHES = {

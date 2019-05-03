@@ -75,6 +75,8 @@ CACHES = {
     }
 }
 
+
+
 DEFAULT_FROM_EMAIL =  env('EMAIL_FROM')
 EMAIL_USE_TLS = True
 EMAIL_HOST = env("EMAIL_HOST")

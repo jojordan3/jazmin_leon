@@ -38,6 +38,18 @@
 	</head>
 
   	<body class="{% block body_class %}{% endblock %}">
+			<header class="sticky-shrinknav-header">
+  			<h1 class="sticky-shrinknav-header-title">sticky-shrinknav</h1>
+  			<ul class="menu align-center sticky-shrinknav-menu">
+    			<li><a href="https://www.jazminleon.com/">Home</a></li>
+    			<li><a href="https://www.jazminleon.com/my_story">My Story</a></li>
+    			<li><a href="https://www.jazminleon.com/resources">Resources</a></li>
+    			<li><a href="https://www.jazminleon.com/blog">Blog</a></li>
+					<li><a href="https://www.jazminleon.com/contact"
+  			</ul>
+			</header>
+
+
     	{% wagtailuserbar %}
 
     	{% get_site_root as site_root %}
@@ -99,6 +111,7 @@
   		{% compress js %}
   			<script src="{% static 'node_modules/foundation-sites/dist/js/foundation.min.js' %}"></script>
   			<script type="text/javascript" src="{% static 'js/app.js' %}"></script>
+  			<script type="text/javascript" src="{% static 'js/stickynav.js' %}"></script>
   		{% endcompress %}
 
   		{% block site_js %}

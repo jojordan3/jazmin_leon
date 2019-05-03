@@ -23,7 +23,7 @@ urlpatterns = [
 
     url(r'^admin/', include(wagtailadmin_urls)),
     url(r'^search/$', search_views.search, name='search'),
-    url(r'^documents/', include(wagtaildocs_urls)),
+    url(r'^resources/', include(wagtaildocs_urls)),
 
     url('^sitemap\.xml$', sitemap),
     url(r'^blog/feed/basic$', BasicFeed(), name='basic_feed'),

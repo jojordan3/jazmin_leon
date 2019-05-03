@@ -29,5 +29,5 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE",
 
 app = Celery("jazmin_leon")
 
-app.config_from_object('django.conf:settings')
+app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
