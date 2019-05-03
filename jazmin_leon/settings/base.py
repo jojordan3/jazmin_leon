@@ -224,11 +224,6 @@ STATICFILES_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
 )
 
-
-MEDIA_ROOT = root('media')
-MEDIA_URL = '/media/'
-
-
 # Django compressor settings
 # http://django-compressor.readthedocs.org/en/latest/settings/
 
@@ -297,7 +292,7 @@ DEFAULT_FROM_EMAIL = env(
 SERVER_EMAIL = env('DJANGO_SERVER_EMAIL', default=DEFAULT_FROM_EMAIL)
 # https://docs.djangoproject.com/en/dev/ref/settings/#email-subject-prefix
 EMAIL_SUBJECT_PREFIX = env('DJANGO_EMAIL_SUBJECT_PREFIX', default='[Jazmin Leon]')
-
+sg = sendgrid.SendGridClient(env.str('SENDGRID_API_KEY'))
 # Anymail (Mailgun)
 # ------------------------------------------------------------------------------
 # https://anymail.readthedocs.io/en/stable/installation/#installing-anymail
@@ -377,22 +372,22 @@ STATIC_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/static/'
 
 # MEDIA
 # ------------------------------------------------------------------------------
-
 # region http://stackoverflow.com/questions/10390244/
 # Full-fledge class: https://stackoverflow.com/a/18046120/104731
-from storages.backends.s3boto3 import S3Boto3Storage  # noqa E402
+MEDIA_ROOT = root('media')
+MEDIA_URL = '/media/'
 
+from storages.backends.s3boto3 import S3Boto3Storage  # noqa E402
 
 class StaticRootS3Boto3Storage(S3Boto3Storage):
     location = 'static'
-
 
 class MediaRootS3Boto3Storage(S3Boto3Storage):
     location = 'media'
     file_overwrite = False
 
-
 # endregion
+
 DEFAULT_FILE_STORAGE = 'config.settings.production.MediaRootS3Boto3Storage'
 MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/media/'
 
