@@ -1,8 +1,6 @@
 @charset 'utf-8';
-
 @import 'css/settings';
 @import 'node_modules/foundation-sites/scss/foundation';
-
 // @include foundation-global-styles;
 @include foundation-grid;
 // @include foundation-flex-grid;
@@ -44,32 +42,61 @@
 // @include foundation-visibility-classes;
 // @include foundation-float-classes;
 // @include foundation-flex-classes;
-
 // Colors
-
 $primary: map-get($foundation-palette, primary);
 $secondary: map-get($foundation-palette, secondary);
-$primary-dark: #303F9F;
-$off-white : #F8F8FA;
+$primary-dark: #003333;
+$off-white: #EBFCEF;
 $dove-gray: #666666;
 $dark-metal: #222222;
 $static: static;
-
-
 // Fonts
-$header-font-family: 'Roboto', sans-serif;
-$body-font-family: 'Roboto', sans-serif;
-$paragraph-font-family: 'Roboto', sans-serif;
-
+$header-font-family: 'Roboto',
+sans-serif;
+$body-font-family: 'Roboto',
+sans-serif;
+$paragraph-font-family: 'Roboto',
+sans-serif;
 $header-font-color: $dove-gray !default;
+body {
+    background: $off-white;
+    color: $dove-gray;
+    font-family: 'Roboto', sans-serif;
+}
 
-body {background: $off-white; color: $dove-gray; font-family: 'Roboto', sans-serif;}
-.off-canvas-content, .off-canvas-content {background: transparent;}
-.row{max-width: 68em;}
-.pad {padding: 20px 0;}
-a {color: $primary;}
-a:hover {color: $secondary;}
-button, .button {background: $primary;}
-button.secondary, .button.secondary {background: $dove-gray;color: $secondary;}
-button:hover, .button:hover {background: $primary-dark;}
+.off-canvas-content,
+.off-canvas-content {
+    background: transparent;
+}
 
+.row {
+    max-width: 68em;
+}
+
+.pad {
+    padding: 20px 0;
+}
+
+a {
+    color: $primary;
+}
+
+a:hover {
+    color: $secondary;
+}
+
+button,
+.button {
+    background: $primary;
+}
+
+button.secondary,
+.button.secondary {
+    background: $dove-gray;
+    color: $secondary;
+}
+
+button:hover,
+.button:hover {
+    background: $primary-dark;
+}
