@@ -2,6 +2,9 @@ from django.conf import settings
 from django.urls import include, path, re_path
 from django.contrib import admin
 from wagtail.documents import urls as wagtaildocs_urls
+from wagtail_feeds.feeds import (
+    BasicFeed, BasicJsonFeed, ExtendedFeed, ExtendedJsonFeed
+)
 from coderedcms import admin_urls as coderedadmin_urls
 from coderedcms import search_urls as coderedsearch_urls
 from coderedcms import urls as codered_urls
@@ -16,6 +19,9 @@ urlpatterns = [
 
     # Search
     path('search/', include(coderedsearch_urls)),
+    path('sitemap.xml', sitemap),
+    path('blog/feed/basic/', BasicFeed(), name='basic_feed'),
+    path('blog/feed/extended/', ExtendedFeed(), name='extended_feed'),
 
     # For anything not caught by a more specific rule above, hand over to
     # the page serving mechanism. This should be the last pattern in

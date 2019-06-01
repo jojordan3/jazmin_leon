@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+from decouple import config
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = os.path.dirname(PROJECT_DIR)
@@ -45,6 +46,7 @@ INSTALLED_APPS = [
     'wagtailfontawesome',
     'wagtailcache',
     'wagtailimportexport',
+    'wagtail_feeds',
 
     # Wagtail
     'wagtail.contrib.forms',
@@ -52,6 +54,7 @@ INSTALLED_APPS = [
     'wagtail.contrib.routable_page',
     'wagtail.contrib.sitemaps',
     'wagtail.contrib.search_promotions',
+    'wagtail.contrib.postgres_search',
     'wagtail.embeds',
     'wagtail.sites',
     'wagtail.users',
@@ -73,12 +76,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "django.contrib.sitemaps",
+    'django.contrib.sitemaps',
 
-    #'allauth',
-    #'allauth.account',
-    #'allauth.socialaccount',
-    #'allauth.socialaccount.providers.google',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 ]
 
 MIDDLEWARE = [
@@ -97,7 +100,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
 
     # Error reporting. Uncomment this to recieve emails when a 404 is triggered.
-    #'django.middleware.common.BrokenLinkEmailsMiddleware',
+    'django.middleware.common.BrokenLinkEmailsMiddleware',
 
     # CMS functionality
     'wagtail.core.middleware.SiteMiddleware',
@@ -127,6 +130,17 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'jazminleon.wsgi.application'
 
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
@@ -171,6 +185,15 @@ USE_L10N = True
 
 USE_TZ = True
 
+COMPRESS_PRECOMPILERS = (
+    ('text/x-scss', 'django_libsass.SassCompiler'),
+)
+
+COMPRESS_CACHEABLE_PRECOMPILERS = (
+    ('text/x-scss', 'django_libsass.SassCompiler'),
+)
+
+COMPRESS_OFFLINE = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
@@ -178,6 +201,7 @@ USE_TZ = True
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'compressor.finders.CompressorFinder',
 ]
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')

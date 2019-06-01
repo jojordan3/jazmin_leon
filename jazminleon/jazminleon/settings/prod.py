@@ -4,10 +4,23 @@ from .base import *
 DEBUG = False
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '9zl=70u*hl1t@2mj&^-7@z)@6le2t0bzpkoz32nuz0k74#dc1p'
+SECRET_KEY = env.str('SECRET_KEY')
+
+
+COMPRESS_OFFLINE = True
+
+COMPRESS_CSS_FILTERS = [
+    'compressor.filters.css_default.CssAbsoluteFilter',
+    'compressor.filters.cssmin.CSSMinFilter',
+]
+
+INSTALLED_APPS += [
+    'wagtail.contrib.frontend_cache',
+    'gunicorn',  
+]
 
 # Add your site's domain name(s) here.
-ALLOWED_HOSTS = ['www.coaching.jazminleon.com']
+ALLOWED_HOSTS = ['www.burnout-coaching.jazminleon.com']
 
 # To send email from the server, we recommend django_sendmail_backend
 # Or specify your own email backend such as an SMTP server.
@@ -72,6 +85,24 @@ CACHES = {
         'TIMEOUT': 14400, # in seconds
     }
 }
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': '{0}/{1}'.format(env.db('REDIS_URL', default='redis://127.0.0.1:6379'), 0),
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            'IGNORE_EXCEPTIONS': True,
+        }
+    }
+}
+
+DEFAULT_FROM_EMAIL =  env('EMAIL_FROM')
+EMAIL_USE_TLS = True
+EMAIL_HOST = env("EMAIL_HOST")
+EMAIL_HOST_USER = env('EMAIL_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_PASSWD')
+EMAIL_PORT = 587
 
 try:
     from .local_settings import *

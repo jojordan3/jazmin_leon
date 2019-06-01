@@ -20,3 +20,4 @@ gunicorn
 redis
 wagtail-fontawesome
 wagtail-markdodwn
+django-wagtail-feeds
