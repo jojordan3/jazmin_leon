@@ -1,11 +1,11 @@
 from .base import *
+from .local import *
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env.str('SECRET_KEY')
-
+SECRET_KEY = "prvESVBoA7x81xdMqvRRYuofHfvUDXYa+iU2RRC9P2g"
 
 COMPRESS_OFFLINE = True
 
@@ -16,23 +16,25 @@ COMPRESS_CSS_FILTERS = [
 
 INSTALLED_APPS += [
     'wagtail.contrib.frontend_cache',
-    'gunicorn',  
+    'gunicorn',
 ]
+INSTALLED_APPS = ['collectfast'] + INSTALLED_APPS
 
 # Add your site's domain name(s) here.
-ALLOWED_HOSTS = ['www.burnout-coaching.jazminleon.com']
+ALLOWED_HOSTS = DJANGO_ALLOWED_HOSTS
 
 # To send email from the server, we recommend django_sendmail_backend
 # Or specify your own email backend such as an SMTP server.
 # https://docs.djangoproject.com/en/2.1/ref/settings/#email-backend
-EMAIL_BACKEND = 'django_sendmail_backend.backends.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 # Default email address used to send messages from the website.
-DEFAULT_FROM_EMAIL = 'Jazmin Leon LLC <info@coaching.jazminleon.com>'
+DEFAULT_FROM_EMAIL = 'Jazmin Leon LLC <noreply@jazminleon.com>'
 
 # A list of people who get error notifications.
 ADMINS = [
-    ('Administrator', 'admin@coaching.jazminleon.com'),
+    ('Jazmin Leon', 'jazmin@jazminleon.com'),
+    ('Joanne Jordan', 'joanne.k.m.jordan@gmail.com')
 ]
 
 # A list in the same format as ADMINS that specifies who should get broken link
@@ -77,34 +79,11 @@ TEMPLATES = [
     },
 ]
 
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': os.path.join(BASE_DIR, 'cache'),
-        'KEY_PREFIX': 'coderedcms',
-        'TIMEOUT': 14400, # in seconds
-    }
-}
 
-CACHES = {
-    'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': '{0}/{1}'.format(env.db('REDIS_URL', default='redis://127.0.0.1:6379'), 0),
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-            'IGNORE_EXCEPTIONS': True,
-        }
-    }
-}
-
-DEFAULT_FROM_EMAIL =  env('EMAIL_FROM')
 EMAIL_USE_TLS = True
-EMAIL_HOST = env("EMAIL_HOST")
-EMAIL_HOST_USER = env('EMAIL_USER')
-EMAIL_HOST_PASSWORD = env('EMAIL_PASSWD')
+EMAIL_HOST = 'smtp.google.com'
+EMAIL_HOST_USER = DJANGO_ADMIN_EMAIL
+EMAIL_HOST_PASSWORD = DJANGO_EMAIL_PASSWORD
 EMAIL_PORT = 587
 
-try:
-    from .local_settings import *
-except ImportError:
-    pass
+WEB_CONCURRENCY = 10

@@ -1,23 +1,33 @@
-coderedcms
-
+coderedcms>=0.14.1
+Django==2.1.8
 # django_sendmail_backend enables sending email from your web host server.
 # Remove this if using a different email backend.
 # django_sendmail_backend
 
 # To use with a MySQL database (offered by most web hosts), uncomment the following.
-#mysqlclient
-django-allauth
-django-compressor
-django-libsass
-django-environ
-django-redis
-libsass
-psycopg2-binary
-wand
-bleach
-django-redis-cache
-gunicorn
-redis
-wagtail-fontawesome
-wagtail-markdodwn
-django-wagtail-feeds
+mysqlclient
+django-allauth>=0.39.1
+django-compressor>=2.3
+django-libsass>=0.7
+django-redis>=4.10.0
+libsass>=0.19.1
+wand>=0.5.4
+bleach~=3.1
+django-redis-cache>=2.0.0
+gunicorn>=19.9.0
+redis>=3.2.1
+wagtailfontawesome>=1.1.4
+wagtail-markdown>=0.5
+django-wagtail-feeds>=0.1.0
+wagalytics>=0.8.1
+django-anymail[mailgun]>=6.0.1
+django-anymail[sendgrid]>=6.0.1
+django-storages>=1.7.1
+boto3>=1.9.159
+pylibmc>=1.6.0
+django-debug-toolbar>=1.11
+django-extensions>=2.1.7
+wagtail-whoosh>=0.2.3
+fluentcms-countdown>=1.2
+fluentcms-cookielaw>=2.0
+argon2-cffi>=19.1.0

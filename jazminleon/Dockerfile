@@ -2,7 +2,7 @@ FROM python:3.6
 LABEL maintainer="jazminleon"
 
 ENV PYTHONUNBUFFERED 1
-ENV DJANGO_ENV dev
+ENV DJANGO_ENV prod
 
 COPY ./requirements.txt /code/requirements.txt
 RUN pip install -r /code/requirements.txt

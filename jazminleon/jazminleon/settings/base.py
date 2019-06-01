@@ -12,12 +12,12 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-from decouple import config
+from .local import *
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = os.path.dirname(PROJECT_DIR)
 
-
+SECRET_KEY = "prvESVBoA7x81xdMqvRRYuofHfvUDXYa+iU2RRC9P2g"
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
@@ -37,6 +37,10 @@ INSTALLED_APPS = [
     'products',
     'utils',
 
+    'storages',
+    'django_redis',
+    'anymail',
+
     # CodeRed CMS
     'coderedcms',
     'bootstrap4',
@@ -54,7 +58,7 @@ INSTALLED_APPS = [
     'wagtail.contrib.routable_page',
     'wagtail.contrib.sitemaps',
     'wagtail.contrib.search_promotions',
-    'wagtail.contrib.postgres_search',
+    #'wagtail.contrib.postgres_search',
     'wagtail.embeds',
     'wagtail.sites',
     'wagtail.users',
@@ -68,6 +72,11 @@ INSTALLED_APPS = [
     'wagtail.contrib.table_block',
     'wagtail.admin',
     'wagtailmarkdown',
+
+    'fluentcms_cookielaw',
+    'fluentcms_countdown',
+
+    'wagalytics',
 
     # Django
     'django.contrib.admin',
@@ -121,8 +130,12 @@ TEMPLATES = [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
                 'wagtail.contrib.settings.context_processors.settings',
+                'django.template.context_processors.request',
             ],
         },
     },
@@ -147,10 +160,54 @@ SOCIALACCOUNT_PROVIDERS = {
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'BACKEND': 'django.db.backends.mysql',
+        'NAME': DB_NAME,
+	'USER': DB_USER,
+	'PASSWORD': DB_PASSWORD,
+	'HOST': DB_HOST,
+	'PORT': DB_PORT,
+	'OPTIONS': {
+	    'init_command': 'SET default_storage_engine=INNODB; SET sql_mode="STRICT_TRANS_TABLES;"',
+	}
     }
 }
+DATABASES['default']['ATOMIC_REQUESTS'] = True  # noqa F405
+DATABASES['default']['CONN_MAX_AGE'] = 60
+
+
+CACHES = {
+    'default': {
+	'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+	'LOCATION': [
+	    '127.0.0.1:11211',
+    	]
+    },
+    'redis': {
+	'BACKEND': 'django_redis.cache.RedisCache',
+	'LOCATION': REDIS_CACHE_URL,
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            'IGNORE_EXCEPTIONS': True,
+        },
+    }
+}
+
+# django-allauth
+# ------------------------------------------------------------------------------
+ACCOUNT_ALLOW_REGISTRATION = True
+# https://django-allauth.readthedocs.io/en/latest/configuration.html
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+# https://django-allauth.readthedocs.io/en/latest/configuration.html
+ACCOUNT_EMAIL_REQUIRED = True
+# https://django-allauth.readthedocs.io/en/latest/configuration.html
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+# https://django-allauth.readthedocs.io/en/latest/configuration.html
+ACCOUNT_ADAPTER = 'jazminleon.users.adapters.AccountAdapter'
+# https://django-allauth.readthedocs.io/en/latest/configuration.html
+SOCIALACCOUNT_ADAPTER = 'jazminleon.users.adapters.SocialAccountAdapter'
+ACCOUNT_EMAIL_SUBJECT_PREFIX = 'Jazmin Leon Mindset Coach & Strategist'
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
+ACCOUNT_SIGNUP_EMAIL_ENTER_TWICE = True
 
 
 # Password validation
@@ -171,13 +228,21 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+PASSWORD_HASHERS = [
+    # https://docs.djangoproject.com/en/dev/topics/auth/passwords/#using-argon2-with-django
+    'django.contrib.auth.hashers.Argon2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+    'django.contrib.auth.hashers.BCryptPasswordHasher',
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'America/New_York'
+TIME_ZONE = 'America/Los_Angeles'
 
 USE_I18N = False
 
@@ -185,15 +250,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-COMPRESS_PRECOMPILERS = (
-    ('text/x-scss', 'django_libsass.SassCompiler'),
-)
-
-COMPRESS_CACHEABLE_PRECOMPILERS = (
-    ('text/x-scss', 'django_libsass.SassCompiler'),
-)
-
-COMPRESS_OFFLINE = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
@@ -210,6 +266,90 @@ STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
+# SECURITY
+# ------------------------------------------------------------------------------
+# https://docs.djangoproject.com/en/dev/ref/settings/#secure-proxy-ssl-header
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# https://docs.djangoproject.com/en/dev/ref/settings/#secure-ssl-redirect
+SECURE_SSL_REDIRECT = True
+# https://docs.djangoproject.com/en/dev/ref/settings/#session-cookie-secure
+SESSION_COOKIE_SECURE = True
+# https://docs.djangoproject.com/en/dev/ref/settings/#csrf-cookie-secure
+CSRF_COOKIE_SECURE = True
+# https://docs.djangoproject.com/en/dev/topics/security/#ssl-https
+# https://docs.djangoproject.com/en/dev/ref/settings/#secure-hsts-seconds
+# TODO: set this to 60 seconds first and then to 518400 once you prove the former works
+SECURE_HSTS_SECONDS = 518400
+# https://docs.djangoproject.com/en/dev/ref/settings/#secure-hsts-include-subdomains
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+# https://docs.djangoproject.com/en/dev/ref/settings/#secure-hsts-preload
+SECURE_HSTS_PRELOAD = True
+# https://docs.djangoproject.com/en/dev/ref/middleware/#x-content-type-options-nosniff
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SESSION_COOKIE_HTTPONLY = True
+# https://docs.djangoproject.com/en/dev/ref/settings/#csrf-cookie-httponly
+CSRF_COOKIE_HTTPONLY = True
+# https://docs.djangoproject.com/en/dev/ref/settings/#secure-browser-xss-filter
+SECURE_BROWSER_XSS_FILTER = True
+# https://docs.djangoproject.com/en/dev/ref/settings/#x-frame-options
+X_FRAME_OPTIONS = 'DENY'
+
+
+# STORAGES
+# ------------------------------------------------------------------------------
+# https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html#settings
+AWS_ACCESS_KEY_ID = DJANGO_AWS_ACCESS_KEY_ID
+# https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html#settings
+AWS_SECRET_ACCESS_KEY = DJANGO_AWS_SECRET_ACCESS_KEY
+# https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html#settings
+AWS_STORAGE_BUCKET_NAME = DJANGO_AWS_STORAGE_BUCKET_NAME
+AWS_CONTENT_BUCKET_NAME = DJANGO_AWS_CONTENT_BUCKET_NAME
+AWS_MEDIA_CONTAINER = DJANGO_AWS_MEDIA_CONTAINER
+# https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html#settings
+AWS_QUERYSTRING_AUTH = False
+# DO NOT change these unless you know what you're doing.
+_AWS_EXPIRY = 60 * 60 * 24 * 7
+# https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html#settings
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': f'max-age={_AWS_EXPIRY}, s-maxage={_AWS_EXPIRY}, must-revalidate',
+}
+
+AWS_DEFAULT_ACL = 'authenticated-read'
+AWS_S3_ENCRYPTION = True
+AWS_S3_FILE_OVERWRITE = False
+
+# STATIC
+# ------------------------
+STATICFILES_STORAGE = 'config.settings.production.StaticRootS3Boto3Storage'
+STATIC_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/'
+
+# MEDIA
+# ------------------------------------------------------------------------------
+# region http://stackoverflow.com/questions/10390244/
+# Full-fledge class: https://stackoverflow.com/a/18046120/104731
+from storages.backends.s3boto3 import S3Boto3Storage  # noqa E402
+
+
+class StaticRootS3Boto3Storage(S3Boto3Storage):
+    location = 'static'
+
+
+class MediaRootS3Boto3Storage(S3Boto3Storage):
+    location = 'media'
+    file_overwrite = False
+
+
+# endregion
+DEFAULT_FILE_STORAGE = 'config.settings.production.MediaRootS3Boto3Storage'
+MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+
+date_format = "%a, %b %d %Y %H:%M:%S"
+
+exp_date = datetime.datetime.today() + datetime.timedelta(weeks=1)
+
+CLOUDFRONT_ID = DJANGO_CLOUDFRONT_ID
+CLOUDFRONT_DOMAIN = DJANGO_CLOUDFRONT_DOMAIN
+AWS_S3_CUSTOM_DOMAIN = CLOUDFRONT_DOMAIN
 
 # Login
 
@@ -225,7 +365,7 @@ WAGTAIL_ENABLE_UPDATE_CHECK = False
 
 # Base URL to use when referring to full URLs within the Wagtail admin backend -
 # e.g. in notification emails. Don't include '/admin' or a trailing slash
-BASE_URL = 'http://www.coaching.jazminleon.com'
+BASE_URL = 'http://www.burnout-coaching.jazminleon.com'
 
 
 # Bootstrap
@@ -242,3 +382,46 @@ BOOTSTRAP4 = {
 # Tags
 
 TAGGIT_CASE_INSENSITIVE = True
+
+
+# Wagalytics
+GA_VIEW_ID = WAGTAIL_GA_VIEW_ID
+GA_KEY_CONTENT = WAGTAIL_GA_KEY_CONTENT
+
+
+EMAIL_SUBJECT_PREFIX = '[Jazmin Leon]'
+
+
+# Anymail (Mailgun)
+# ------------------------------------------------------------------------------
+# https://anymail.readthedocs.io/en/stable/installation/#installing-anymail
+EMAIL_BACKENDS = {
+    'mailgun': 'anymail.backends.mailgun.EmailBackend',
+    'sendgrid': 'anymail.backends.sendgrid.EmailBackend',
+}
+# https://anymail.readthedocs.io/en/stable/installation/#anymail-settings-reference
+ANYMAIL = {
+    'MAILGUN_API_KEY': DJANGO_MAILGUN_API_KEY,
+    'MAILGUN_SENDER_DOMAIN': DJANGO_MAILGUN_DOMAIN,
+    'SENDGRID_API_KEY': DJANGO_SENDGRID_API_KEY,
+}
+
+COMPRESS_ENABLED = True
+COMPRESS_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+
+COMPRESS_PRECOMPILERS = (
+    ('text/x-scss', 'django_libsass.SassCompiler'),
+)
+
+COMPRESS_CACHEABLE_PRECOMPILERS = (
+    ('text/x-scss', 'django_libsass.SassCompiler'),
+)
+
+COMPRESS_OFFLINE = False
+# https://django-compressor.readthedocs.io/en/latest/settings/#django.conf.settings.COMPRESS_URL
+COMPRESS_URL = STATIC_URL # noqa F405# Collectfast
+# ------------------------------------------------------------------------------
+# https://github.com/antonagestam/collectfast#installation
+AWS_PRELOAD_METADATA = True
+
